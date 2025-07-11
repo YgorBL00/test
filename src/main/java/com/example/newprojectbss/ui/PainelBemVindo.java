@@ -3,12 +3,13 @@ package com.example.newprojectbss.ui;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -17,8 +18,14 @@ import javafx.util.Duration;
 
 public class PainelBemVindo extends BorderPane {
 
-    public PainelBemVindo(Stage stage) {
-        setStyle("-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, #b3e0ff, white);");
+    private final Stage stage;
+    private final StackPane root;
+
+    public PainelBemVindo(Stage stage, StackPane root) {
+        this.stage = stage;
+        this.root = root;
+
+        setStyle("-fx-background-color: transparent;"); // transparente para deixar o fundo do root visível
 
         // Topo: LOGO CENTRALIZADO
         VBox topo = new VBox();
@@ -48,8 +55,7 @@ public class PainelBemVindo extends BorderPane {
         centro.setPadding(new Insets(40, 0, 0, 0));
         setCenter(centro);
 
-        // ANIMAÇÕES
-
+        // Animação de fade-in da mensagem e botão
         FadeTransition ftMensagem = new FadeTransition(Duration.seconds(1.5), mensagem);
         ftMensagem.setFromValue(0);
         ftMensagem.setToValue(1);
@@ -57,11 +63,11 @@ public class PainelBemVindo extends BorderPane {
             FadeTransition ftBtn = new FadeTransition(Duration.millis(700), iniciar);
             ftBtn.setFromValue(0);
             ftBtn.setToValue(1);
-            ftBtn.setOnFinished(ev2 -> {
-                // Caso queira alguma animação extra no rodapé, adicione aqui.
-            });
             ftBtn.play();
         });
+
+
+
         mensagem.setTranslateY(30);
         ftMensagem.currentTimeProperty().addListener((obs, o, n) -> {
             if (n != null && ftMensagem.getDuration().greaterThan(Duration.ZERO)) {
@@ -71,33 +77,34 @@ public class PainelBemVindo extends BorderPane {
         });
         ftMensagem.play();
 
-        // Declaração correta das variáveis de fade-out para o botão iniciar
-        FadeTransition fadeOutTopo = new FadeTransition(Duration.millis(800), topo);
+        // Fade-out ao clicar em iniciar, trocando a tela
+        FadeTransition fadeOutTopo = new FadeTransition(Duration.millis(500), topo);
         fadeOutTopo.setFromValue(1);
         fadeOutTopo.setToValue(0);
 
-        FadeTransition fadeOutCentro = new FadeTransition(Duration.millis(800), centro);
+        FadeTransition fadeOutCentro = new FadeTransition(Duration.millis(500), centro);
         fadeOutCentro.setFromValue(1);
         fadeOutCentro.setToValue(0);
 
-        FadeTransition fadeOutRodape = new FadeTransition(Duration.millis(800));
-        fadeOutRodape.setFromValue(1);
-        fadeOutRodape.setToValue(0);
-
-        fadeOutRodape.setOnFinished(ev -> {
-            // Trocar a cena para o formulário
-            Formulario telaSimples = new Formulario(stage);
-            Scene novaCena = new Scene(telaSimples, 950, 650);
-            stage.setScene(novaCena);
-        });
-
-        // Evento do botão iniciar
         iniciar.setOnAction(e -> {
             iniciar.setDisable(true);
 
             fadeOutTopo.play();
             fadeOutCentro.play();
-            fadeOutRodape.play();
-        });
+
+            fadeOutCentro.setOnFinished(ev -> {
+                // Troca o conteúdo do root pelo formulário
+                root.getChildren().setAll(new Formulario(stage, root));
+
+                // Aplica fade-in no formulário
+                Node formulario = root.getChildren().get(0);
+                formulario.setOpacity(0);
+
+                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), formulario);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+    });
     }
 }

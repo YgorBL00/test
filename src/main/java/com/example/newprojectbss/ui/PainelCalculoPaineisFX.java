@@ -1,13 +1,21 @@
 package com.example.newprojectbss.ui;
 
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import com.example.newprojectbss.model.LogicaDoCalculodePaineis;
 
 public class PainelCalculoPaineisFX extends VBox {
+
+    private StackPane root;   // <-- declarar aqui
+    private Stage stage;      // <-- também guarde a stage
 
     private final TextField tfEspessura = novoCampo();
     private final TextField tfLargura = novoCampo();
@@ -21,20 +29,60 @@ public class PainelCalculoPaineisFX extends VBox {
     private final Label lbTotalPaineis = new Label("Total painéis: -");
     private final Label lbTotalM2 = new Label("Total m²: -");
 
-    public PainelCalculoPaineisFX() {
+    public final Button btnVoltar = new Button("Voltar");
+
+    // Alterar construtor para receber root e stage
+    public PainelCalculoPaineisFX(Stage stage, StackPane root) {
+        this.root = root;
+        this.stage = stage;
+
         setSpacing(0);
         setPadding(new Insets(18, 16, 12, 16));
         setStyle("-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, #b3e0ff, white);");
 
+        // Montar UI
         HBox linha = new HBox(30);
         linha.setAlignment(Pos.TOP_LEFT);
-
         VBox painelCampos = montarPainelCampos();
         VBox painelResultados = montarPainelResultados();
         linha.getChildren().addAll(painelCampos, painelResultados);
-
         getChildren().add(linha);
+
+        HBox boxBotoes = new HBox();
+        boxBotoes.setPadding(new Insets(20, 0, 0, 0));
+        boxBotoes.setAlignment(Pos.CENTER_LEFT);
+
+        btnVoltar.setPrefWidth(100);
+        btnVoltar.setFont(Font.font(14));
+        boxBotoes.getChildren().add(btnVoltar);
+        getChildren().add(boxBotoes);
+
+        // Ação do botão Voltar usando root e stage
+        btnVoltar.setOnAction(e -> {
+            Formulario formulario = new Formulario(stage, root);
+
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), this);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+
+            fadeOut.setOnFinished(ev -> {
+                root.getChildren().setAll(formulario);
+                stage.setTitle("Configuração Inicial da Câmara");
+                formulario.setOpacity(0);
+
+                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), formulario);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1);
+                fadeIn.play();
+            });
+            fadeOut.play();
+        });
+
+
     }
+
+
+    // resto do código original...
 
     private VBox montarPainelCampos() {
         VBox campos = new VBox(11);

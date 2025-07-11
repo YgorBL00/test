@@ -1,201 +1,236 @@
-package com.example.newprojectbss.ui;
+    package com.example.newprojectbss.ui;
 
-import com.example.newprojectbss.model.*;
-import javafx.animation.FadeTransition;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.util.Duration;
+    import com.example.newprojectbss.model.*;
+    import javafx.animation.FadeTransition;
+    import javafx.application.Platform;
+    import javafx.geometry.Insets;
+    import javafx.geometry.Pos;
+    import javafx.scene.Node;
+    import javafx.scene.Parent;
+    import javafx.scene.Scene;
+    import javafx.scene.control.*;
+    import javafx.scene.layout.*;
+    import javafx.scene.paint.Color;
+    import javafx.scene.text.Font;
+    import javafx.stage.Modality;
+    import javafx.stage.Stage;
+    import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
+    import java.util.ArrayList;
+    import java.util.List;
 
-public class Formulario extends StackPane {
+    public class Formulario extends StackPane {
 
-    private final ComboBox<String> cbTipo;
-    private final ComboBox<String> cbPorta;
-    private final TextField tfComprimento;
-    private final TextField tfLargura;
-    private final TextField tfAltura;
-    private final ToggleGroup grupoPiso;
+        private final ComboBox<String> cbTipo;
+        private final ComboBox<String> cbPorta;
+        private final TextField tfComprimento;
+        private final TextField tfLargura;
+        private final TextField tfAltura;
+        private final ToggleGroup grupoPiso;
+        private Stage stage;
+        private StackPane root;
 
-    public Formulario(Stage stage) {
-        setStyle("-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, #b3e0ff, white);");
+        public Formulario(Stage stage, StackPane root) {
+            this.stage = stage;
+            this.root = root;
 
-        Label titulo = new Label("Configuração Inicial da Câmara");
-        titulo.setFont(Font.font("SansSerif", 24));
-        titulo.setTextFill(Color.web("#23336f"));
+            setStyle("-fx-background-color: linear-gradient(from 0% 100% to 0% 0%, #b3e0ff, white);");
 
-        Label labelTipo = new Label("Tipo de câmara:");
-        cbTipo = new ComboBox<>();
-        cbTipo.getItems().addAll("Resfriado", "Congelado");
-        cbTipo.setPromptText("Selecione");
+            Label titulo = new Label("Configuração Inicial da Câmara");
+            titulo.setFont(Font.font("SansSerif", 24));
+            titulo.setTextFill(Color.web("#23336f"));
 
-        Label labelPorta = new Label("Tipo de porta:");
-        cbPorta = new ComboBox<>();
-        cbPorta.getItems().addAll("Giratoria", "Correr");
-        cbPorta.setPromptText("Selecione");
-        HBox boxDimensoes0 = new HBox(10, cbTipo, cbPorta);
+            Label labelTipo = new Label("Tipo de câmara:");
+            cbTipo = new ComboBox<>();
+            cbTipo.getItems().addAll("Resfriado", "Congelado");
+            cbTipo.setPromptText("Selecione");
+            cbTipo.setPrefWidth(110);  // largura fixa
 
-        Label labelDimensoes = new Label("Dimensões (m):");
-        tfComprimento = new TextField();
-        tfComprimento.setPromptText("Comprimento");
-        tfLargura = new TextField();
-        tfLargura.setPromptText("Largura");
-        tfAltura = new TextField();
-        tfAltura.setPromptText("Altura");
-        HBox boxDimensoes = new HBox(10, tfComprimento, tfLargura, tfAltura);
+            Label labelPorta = new Label("Tipo de porta:");
+            cbPorta = new ComboBox<>();
+            cbPorta.getItems().addAll("Giratoria", "Correr");
+            cbPorta.setPromptText("Selecione");
+            cbPorta.setPrefWidth(110); // mesma largura
 
-        Label labelPiso = new Label("A câmara terá piso?");
-        grupoPiso = new ToggleGroup();
-        RadioButton rbSim = new RadioButton("Sim");
-        RadioButton rbNao = new RadioButton("Não");
-        rbSim.setToggleGroup(grupoPiso);
-        rbNao.setToggleGroup(grupoPiso);
-        HBox boxPiso = new HBox(10, rbSim, rbNao);
+            HBox boxDimensoes0 = new HBox(10, cbTipo, cbPorta);
 
-        VBox conteudoFormulario = new VBox(15, titulo, labelTipo, cbTipo, labelPorta, cbPorta, boxDimensoes0,
-                labelDimensoes, boxDimensoes, labelPiso, boxPiso);
-        conteudoFormulario.setPadding(new Insets(30));
-        conteudoFormulario.setAlignment(Pos.TOP_LEFT);
+            Label labelDimensoes = new Label("Dimensões (m):");
+            tfComprimento = new TextField();
+            tfComprimento.setPromptText("Comprimento");
+            tfLargura = new TextField();
+            tfLargura.setPromptText("Largura");
+            tfAltura = new TextField();
+            tfAltura.setPromptText("Altura");
+            HBox boxDimensoes = new HBox(10, tfComprimento, tfLargura, tfAltura);
 
-        Button btnAvancar = new Button("Avançar");
-        btnAvancar.setFont(Font.font(14));
-        btnAvancar.setStyle("-fx-background-color: #23336f; -fx-text-fill: white;");
+            Label labelPiso = new Label("A câmara terá piso?");
+            grupoPiso = new ToggleGroup();
+            RadioButton rbSim = new RadioButton("Sim");
+            RadioButton rbNao = new RadioButton("Não");
+            rbSim.setToggleGroup(grupoPiso);
+            rbNao.setToggleGroup(grupoPiso);
+            HBox boxPiso = new HBox(10, rbSim, rbNao);
 
-        Button btnCalculo = new Button("Calculo de Paineis");
-        btnCalculo.setFont(Font.font(14));
-        btnCalculo.setStyle("-fx-background-color: #23336f; -fx-text-fill: white;");
+            VBox conteudoFormulario = new VBox(15, titulo, labelTipo, cbTipo, labelPorta, cbPorta, boxDimensoes0,
+                    labelDimensoes, boxDimensoes, labelPiso, boxPiso);
+            conteudoFormulario.setPadding(new Insets(30));
+            conteudoFormulario.setAlignment(Pos.TOP_LEFT);
 
-        HBox boxBotao = new HBox(btnAvancar);
-        boxBotao.setAlignment(Pos.CENTER_RIGHT);
-        boxBotao.setPadding(new Insets(20));
+            Button btnAvancar = new Button("Avançar");
+            btnAvancar.setFont(Font.font(14));
+            btnAvancar.setStyle("-fx-background-color: #23336f; -fx-text-fill: white;");
 
-        HBox boxCalculo = new HBox(btnCalculo);
-        boxCalculo.setAlignment(Pos.CENTER_LEFT);
-        boxCalculo.setPadding(new Insets(20));
+            Button btnCalculo = new Button("Calculo de Paineis");
+            btnCalculo.setFont(Font.font(14));
+            btnCalculo.setStyle("-fx-background-color: #23336f; -fx-text-fill: white;");
 
-        Region espaco = new Region();
-        HBox.setHgrow(espaco, Priority.ALWAYS);
+            HBox boxBotao = new HBox(btnAvancar);
+            boxBotao.setAlignment(Pos.CENTER_RIGHT);
+            boxBotao.setPadding(new Insets(20));
 
-        HBox botoesInferiores = new HBox(20, boxCalculo, espaco, boxBotao);
+            HBox boxCalculo = new HBox(btnCalculo);
+            boxCalculo.setAlignment(Pos.CENTER_LEFT);
+            boxCalculo.setPadding(new Insets(20));
 
-        BorderPane layoutFormulario = new BorderPane();
-        layoutFormulario.setCenter(conteudoFormulario);
-        layoutFormulario.setBottom(botoesInferiores);
+            Region espaco = new Region();
+            HBox.setHgrow(espaco, Priority.ALWAYS);
 
-        getChildren().add(layoutFormulario);
+            HBox botoesInferiores = new HBox(20, boxCalculo, espaco, boxBotao);
 
-        btnAvancar.setOnAction(e -> {
-            try {
-                String tipoCamara = cbTipo.getValue();
-                String tipoPorta = cbPorta.getValue();
-                double comprimento = Double.parseDouble(tfComprimento.getText());
-                double largura = Double.parseDouble(tfLargura.getText());
-                double altura = Double.parseDouble(tfAltura.getText());
-                boolean temPiso = ((RadioButton) grupoPiso.getSelectedToggle()).getText().equalsIgnoreCase("Sim");
+            BorderPane layoutFormulario = new BorderPane();
+            layoutFormulario.setCenter(conteudoFormulario);
+            layoutFormulario.setBottom(botoesInferiores);
 
-                DadosCâmara dados = DadosCâmara.getInstancia();
-                dados.setTipoCamara(tipoCamara);
-                dados.setTipoPorta(tipoPorta);
-                dados.setComprimento(comprimento);
-                dados.setLargura(largura);
-                dados.setAltura(altura);
-                dados.setTemPiso(temPiso);
+            getChildren().add(layoutFormulario);
 
-                double area = comprimento * largura;
+            btnAvancar.setOnAction(e -> {
+                btnAvancar.setDisable(true);
 
-                LogicaUC_Evaporadora.ResultadoUC_EV resultado =
-                        LogicaUC_Evaporadora.calcular(area, tipoCamara);
+                try {
+                    /* --- validação dos campos --- */
+                    if (cbTipo.getValue() == null || cbPorta.getValue() == null ||
+                            tfComprimento.getText().isEmpty() || tfLargura.getText().isEmpty() ||
+                            tfAltura.getText().isEmpty() || grupoPiso.getSelectedToggle() == null) {
 
-                System.out.println("=== Resultado UC Evaporadora ===");
-                System.out.println("Tipo de Câmara: " + tipoCamara);
-                System.out.println("Área: " + area + " m²");
-                System.out.println("Potência (HP): " + resultado.potenciaHP);
-                System.out.println("Quantidade de Ventiladores: " + resultado.qtdVentiladores);
+                        mostrarAlerta("Erro", "Preencha todos os campos antes de avançar!");
+                        btnAvancar.setDisable(false);
+                        return;
+                    }
 
-                CalculadoraMateriais calculadora = new CalculadoraMateriais();
-                calculadora.calcular();
-                calculadora.validar();
+                    double comprimento = Double.parseDouble(tfComprimento.getText());
+                    double largura     = Double.parseDouble(tfLargura.getText());
+                    double altura      = Double.parseDouble(tfAltura.getText());
 
-                // Converte para itens da tabela
-                List<Item> listaMateriais = new ArrayList<>();
-                listaMateriais.add(new Item("Painel Paredes", "PIR", "un", calculadora.getPaineisParedes(), 220.0));
-                listaMateriais.add(new Item("Painel Teto", "PIR", "un", calculadora.getPaineisTeto(), 220.0));
-                if (temPiso)
-                    listaMateriais.add(new Item("Painel Piso", "PIR", "un", calculadora.getPaineisPiso(), 220.0));
-                listaMateriais.add(new Item("Cantoneira Interna", "40x40mm", "un", calculadora.getCantoneirasInternas(), 30.0));
-                listaMateriais.add(new Item("Cantoneira Externa", "40x4 0mm", "un", calculadora.getCantoneirasExternas(), 30.0));
-                listaMateriais.add(new Item("Perfil U", "40x40mm", "un", calculadora.getPerfisU(), 40.0));
+                    String  tipoCamara = cbTipo.getValue();
+                    String  tipoPorta  = cbPorta.getValue();
+                    boolean temPiso    = ((RadioButton) grupoPiso.getSelectedToggle())
+                            .getText().equalsIgnoreCase("Sim");
 
-                // Preço da porta (m²): 250 para resfriado, 350 para congelado
-                double precoPorta = tipoCamara.equalsIgnoreCase("Congelado") ? 350 : 250;
-                listaMateriais.add(new Item("Porta Frigorífica", tipoPorta, "un", 1, precoPorta));
+                    /* --- guarda dados no singleton --- */
+                    DadosCâmara dados = DadosCâmara.getInstancia();
+                    dados.setTipoCamara(tipoCamara);
+                    dados.setTipoPorta(tipoPorta);
+                    dados.setComprimento(comprimento);
+                    dados.setLargura(largura);
+                    dados.setAltura(altura);
+                    dados.setTemPiso(temPiso);
 
+                    /* --- gera lista de materiais --- */
+                    double area = comprimento * largura;
 
-                List<Item> itensComplementares = RecomendacaoItensComplementares.recomendar();
+                    CalculadoraMateriais calculadora = new CalculadoraMateriais();
+                    calculadora.calcular();
+                    calculadora.validar();
 
-                // Criar a janela nova com PainelMaterialFX
-                PainelMaterialFX painelMaterial = new PainelMaterialFX();
-                painelMaterial.setListaItens(itensComplementares);
+                    List<Item> itensEvaporadora   = LogicaUC_Evaporadora.gerarItensUCeEV(area, tipoCamara);
+                    List<Item> listaMateriais     = calculadora.gerarListaMateriais(tipoPorta);
+                    List<Item> itensComplementares= RecomendacaoItensComplementares.recomendar();
 
-                Scene novaCena = new Scene(painelMaterial, 950, 650);
+                    List<Item> todosItens = new ArrayList<>();
+                    todosItens.addAll(itensEvaporadora);
+                    todosItens.addAll(listaMateriais);
+                    todosItens.addAll(itensComplementares);
 
-                // Usa o stage existente (parâmetro do construtor, ou você pode guardar como atributo)
-                stage.setScene(novaCena);
-                stage.setTitle("Materiais Recomendados");
-                stage.show();
+                    /* --- cria painel final --- */
+                    PainelMaterialFX painelMaterial = new PainelMaterialFX(stage, root);
+                    painelMaterial.setListaItens(todosItens);
 
-                System.out.println("\n=== Itens Complementares Recomendados ===");
-                for (Item item : itensComplementares) {
-                    System.out.printf("%s (%s) - Qtde: %d - Valor unitário: R$ %.2f\n",
-                            item.getNome(), item.getModelo(), item.getQuantidade(), item.getValor());
+                    /* --- animação: fade‑out no formulário (this) --- */
+                    FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.4), this);
+                    fadeOut.setFromValue(1.0);
+                    fadeOut.setToValue(0.0);
+
+                    fadeOut.setOnFinished(ev -> {
+                        /* troca o conteúdo do root */
+                        root.getChildren().setAll(painelMaterial);
+                        stage.setTitle("Materiais Recomendados");
+                        painelMaterial.setOpacity(0);
+
+                        /* fade‑in no novo painel */
+                        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), painelMaterial);
+                        fadeIn.setFromValue(0.0);
+                        fadeIn.setToValue(1.0);
+                        fadeIn.play();
+                    });
+
+                    fadeOut.play();
+
+                } catch (NumberFormatException ex) {
+                    mostrarAlerta("Erro",
+                            "Digite valores numéricos válidos para comprimento, largura e altura.");
+                    btnAvancar.setDisable(false);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    mostrarAlerta("Erro", "Erro inesperado: " + ex.getMessage());
+                    btnAvancar.setDisable(false);
                 }
-
-                // Após calcular e imprimir no terminal
-
-
-
-
-            } catch (Exception ex) {
-                System.out.println("Erro ao calcular: " + ex.getMessage());
-                ex.printStackTrace();
-                mostrarAlerta("Erro", "Verifique os campos preenchidos!");
-            }
-        });
-
-
-
-
-
-
-        btnCalculo.setOnAction(e -> {
-            btnCalculo.setDisable(true);
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.6), layoutFormulario);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.0);
-            fadeOut.setOnFinished(ev -> {
-                getChildren().clear();
-                PainelCalculoPaineisFX painelCalculo = new PainelCalculoPaineisFX();
-                getChildren().add(painelCalculo);
             });
-            fadeOut.play();
-        });
-    }
 
 
-    private void mostrarAlerta(String titulo, String mensagem) {
-        Alert alerta = new Alert(Alert.AlertType.WARNING);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensagem);
-        alerta.showAndWait();
+
+            btnCalculo.setOnAction(e -> {
+                btnCalculo.setDisable(true);   // evita cliques múltiplos
+
+                try {
+                    // Cria o painel de cálculo
+                    PainelCalculoPaineisFX painelCalculo = new PainelCalculoPaineisFX(stage, root);
+
+                    /* Anima fade‑out no formulário (this) */
+                    FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.4), this);
+                    fadeOut.setFromValue(1.0);
+                    fadeOut.setToValue(0.0);
+
+                    fadeOut.setOnFinished(ev -> {
+                        /* Substitui o conteúdo do root */
+                        root.getChildren().setAll(painelCalculo);
+                        stage.setTitle("Cálculo de Painéis");
+                        painelCalculo.setOpacity(0);
+
+                        /* Anima fade‑in no novo painel */
+                        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), painelCalculo);
+                        fadeIn.setFromValue(0.0);
+                        fadeIn.setToValue(1.0);
+                        fadeIn.play();
+                    });
+
+                    fadeOut.play();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    mostrarAlerta("Erro", "Erro ao abrir o cálculo de painéis: " + ex.getMessage());
+                    btnCalculo.setDisable(false);
+                }
+            });
+
+        }
+
+
+        private void mostrarAlerta(String titulo, String mensagem) {
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+            alerta.setTitle(titulo);
+            alerta.setHeaderText(null);
+            alerta.setContentText(mensagem);
+            alerta.showAndWait();
+        }
     }
-}

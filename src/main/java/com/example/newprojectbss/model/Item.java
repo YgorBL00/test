@@ -4,8 +4,8 @@ public class Item {
     private final String nome;
     private final String modelo;
     private final String unidade;
-    private final int quantidade;
-    private final double valor;
+    private int quantidade;
+    private double valor;
 
     public Item(String nome, String modelo, String unidade, int quantidade, double valor) {
         this.nome = nome;
@@ -27,11 +27,9 @@ public class Item {
         return unidade;
     }
 
-    public int getQuantidade() {
-        return quantidade;
-    }
+    public int getQuantidade() { return quantidade; }
+    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
 
-    public double getValor() {
-        return valor;
-    }
+    public double getValor() { return valor; }
+    public void setValor(double valor) { this.valor = valor; }
 }

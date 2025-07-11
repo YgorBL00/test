@@ -15,13 +15,6 @@ public class RecomendacaoItensComplementares {
 
         double perimetro = 2 * (comprimento + largura);
 
-        // Cantoneiras: perímetro + 4 vezes a altura (considerando cantos verticais)
-        double metrosCantoneira = perimetro + (4 * altura);
-        int qtdCantoneiras = (int) Math.ceil(metrosCantoneira / 3.0);
-
-        // Perfis U: perímetro dividido por 3 metros, arredondado + 2 para porta
-        int qtdPerfis = (int) Math.ceil(perimetro / 3.0) + 2;
-
         // Tipo de gás e quantidade conforme tipo da câmara
         String tipoCamara = dados.getTipoCamara();
 
@@ -51,8 +44,6 @@ public class RecomendacaoItensComplementares {
         lista.add(new Item("Curva (tubo de cobre)", "3/8", "un", 2, 10));
         lista.add(new Item("Joelho (tubo de cobre)", "3/8", "un", 2, 10));
         lista.add(new Item("Metros de Isolamento", "Tubo elastomérico 3/8", "m", (int) Math.ceil(perimetro), 8));
-        lista.add(new Item("Cantoneira Interna", "40x40mm", "un", qtdCantoneiras, 30));
-        lista.add(new Item("Cantoneira Externa", "40x40mm", "un", qtdCantoneiras, 30));
         lista.add(new Item("Fluido (Gás)", tipoGas, "kg", qtdGas, 85));
         lista.add(new Item("Sikaflex (Silicone)", "Tubete", "un", (int) Math.ceil(perimetro / 5.0), 28));
         lista.add(new Item("Rebite", "Alumínio 1/8", "pct", 1, 20));

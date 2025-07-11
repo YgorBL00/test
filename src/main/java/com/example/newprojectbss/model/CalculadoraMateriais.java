@@ -1,5 +1,8 @@
 package com.example.newprojectbss.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CalculadoraMateriais {
 
     private int totalPaineis;
@@ -33,9 +36,9 @@ public class CalculadoraMateriais {
 
         // Ajusta o preço do painel conforme tipo da câmara
         if (tipoCamara.equalsIgnoreCase("Congelado")) {
-            precoPainel = 350; // preço por painel congelada
+            precoPainel = 450; // preço por painel congelada
         } else {
-            precoPainel = 250; // preço por painel resfriada
+            precoPainel = 350; // preço por painel resfriada
         }
 
         // --- Cálculo painéis ---
@@ -102,6 +105,39 @@ public class CalculadoraMateriais {
 
         System.out.printf("Custo total estimado: R$ %.2f\n", custoTotal);
     }
+
+    public List<Item> gerarListaMateriais(String tipoPorta) {
+        List<Item> lista = new ArrayList<>();
+
+        lista.add(new Item("Painel Paredes", "PIR", "un", paineisParedes, precoPainel));
+        lista.add(new Item("Painel Teto", "PIR", "un", paineisTeto, precoPainel));
+
+        if (paineisPiso > 0) {
+            lista.add(new Item("Painel Piso", "PIR", "un", paineisPiso, precoPainel));
+        }
+
+        lista.add(new Item("Cantoneira Interna", "40x40mm", "un", cantoneirasInternas, 30.0));
+        lista.add(new Item("Cantoneira Externa", "40x40mm", "un", cantoneirasExternas, 30.0));
+        lista.add(new Item("Perfil U", "40x40mm", "un", perfisU, 40.0));
+
+        // Ajustado para valores exatos do ComboBox
+        double precoPorta;
+        String portaNormalizada = tipoPorta.trim().toLowerCase();
+
+        if (portaNormalizada.equals("giratoria")) {
+            precoPorta = 2500.0;
+        } else if (portaNormalizada.equals("correr")) {
+            precoPorta = 5000.0;
+        } else {
+            System.err.println("Tipo de porta desconhecido: '" + tipoPorta + "'");
+            precoPorta = 0.0;
+        }
+
+        lista.add(new Item("Porta Frigorífica", tipoPorta, "un", 1, precoPorta));
+
+        return lista;
+    }
+
 
     // Getters caso queira usar externamente
     public int getTotalPaineis() { return totalPaineis; }

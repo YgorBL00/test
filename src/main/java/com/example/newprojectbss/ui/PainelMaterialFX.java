@@ -1,6 +1,14 @@
 package com.example.newprojectbss.ui;
 
+
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import com.example.newprojectbss.model.Item;
+import com.itextpdf.layout.properties.TextAlignment;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -20,6 +28,7 @@ import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -214,20 +223,24 @@ public class PainelMaterialFX extends SplitPane {
             }
         });
 
+        // Botão Custos operacionais
         Button btnCustos = new Button("Custos operacionais");
         btnCustos.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
         btnCustos.setPadding(new Insets(10, 14, 10, 14));
         btnCustos.setOnAction(e -> abrirJanelaCustos2());
 
-        // Troca HBox por StackPane para permitir posicionamento livre do botão
-        StackPane barraInferior2 = new StackPane();
-        barraInferior2.setPrefHeight(50);  // altura suficiente para o botão
+        // Novo botão Exportar
+        Button btnExportar = new Button("Exportar");
+        btnExportar.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        btnExportar.setPadding(new Insets(10, 14, 10, 14));
+        btnExportar.setOnAction(e -> {
+            // Chame aqui a lógica para exportar, por exemplo gerar PDF
+            exportarResumoPDF(); // você pode criar essa função
+        });
 
-        barraInferior2.getChildren().add(btnCustos);
-
-        // Posiciona o botão no StackPane com translate (exemplo: 0 horizontal, 0 vertical)
-        btnCustos.setTranslateX(60);  // Ajuste horizontal pixel a pixel
-        btnCustos.setTranslateY(265);  // Ajuste vertical pixel a pixel
+        // Coloca os dois botões lado a lado
+        HBox botoesOperacionais = new HBox(10, btnCustos, btnExportar);
+        botoesOperacionais.setAlignment(Pos.CENTER_RIGHT);
 
         painelLateral.getChildren().addAll(
                 lblCustoTitulo, lblCusto,
@@ -236,13 +249,67 @@ public class PainelMaterialFX extends SplitPane {
                 lblVendaTitulo, campoVenda,
                 btnCalcular, lblResultado,
                 new Separator(),
-                barraInferior2
+                botoesOperacionais
         );
 
         VBox.setVgrow(painelLateral, Priority.ALWAYS);
-
         return painelLateral;
     }
+
+    private void exportarResumoPDF() {
+        String destino = System.getProperty("user.home") + File.separator + "Downloads" + File.separator + "ListaMateriais.pdf";
+
+        try {
+            PdfWriter writer = new PdfWriter(destino);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            // Título simples, sem alinhamento
+            document.add(new Paragraph("LISTA DE MATERIAL")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(18)
+                    .setBold()
+                    .setMarginBottom(20));
+
+
+
+            // Tabela com colunas fixas (largura automática, sem UnitValue)
+            float[] columnWidths = {100f, 80f, 60f, 60f}; // larguras fixas em pontos
+            Table table = new Table(columnWidths);
+
+            String[] headers = {"Nome", "Modelo", "Unidade", "Quantidade"};
+            for (String h : headers) {
+                table.addHeaderCell(new Cell().add(new Paragraph(h).setBold()));
+            }
+
+            for (Item item : observableItensTabela) {
+                table.addCell(item.getNome());
+                table.addCell(item.getModelo());
+                table.addCell(item.getUnidade());
+                table.addCell(String.valueOf(item.getQuantidade()));
+            }
+
+            document.add(table);
+            document.close();
+
+            // Alerta de sucesso
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Exportação Concluída");
+            alert.setHeaderText("PDF gerado com sucesso!");
+            alert.setContentText("Arquivo salvo em:\n" + destino);
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro ao exportar");
+            alert.setHeaderText("Não foi possível gerar o PDF");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+
 
 
     // Método para calcular custo total somando valor * quantidade dos itens

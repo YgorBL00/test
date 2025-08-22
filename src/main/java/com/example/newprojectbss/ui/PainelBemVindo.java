@@ -33,8 +33,6 @@ public class PainelBemVindo extends BorderPane {
 
         setStyle("-fx-background-color: transparent;");
 
-        // Dispara a verificação obrigatória de atualização
-        verificarAtualizacaoObrigatoria();
 
         // Topo: LOGO CENTRALIZADO
         VBox topo = new VBox();
@@ -115,45 +113,4 @@ public class PainelBemVindo extends BorderPane {
         });
     }
 
-    private void verificarAtualizacaoObrigatoria() {
-        new Thread(() -> {
-            try {
-                // URL do arquivo version.txt no GitHub
-                URL url = new URL("https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPO/main/version.txt");
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                String versaoOnline = in.readLine().trim();
-                in.close();
-
-                String versaoAtual = "1.0.0"; // sua versão atual
-
-                if (!versaoAtual.equals(versaoOnline)) {
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Atualização Obrigatória");
-                        alert.setHeaderText("Nova versão disponível: " + versaoOnline);
-                        alert.setContentText("Você precisa atualizar para continuar usando o aplicativo.");
-
-                        // Botão customizado
-                        Button atualizar = new Button("Atualizar agora");
-                        atualizar.setOnAction(e -> {
-                            try {
-                                java.awt.Desktop.getDesktop().browse(new URL("https://github.com/SEU_USUARIO/SEU_REPO/releases").toURI());
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            Platform.exit(); // fecha o app
-                        });
-
-                        // Substitui os botões padrão pelo nosso botão
-                        alert.getDialogPane().getButtonTypes().clear();
-                        alert.getDialogPane().setContent(atualizar);
-                        alert.showAndWait();
-                    });
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
 }

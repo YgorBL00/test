@@ -1,12 +1,13 @@
 package com.example.newprojectbss;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-public class Launcher {
+public class Launcher extends JFrame {
     private static final String APP_PATH = "out/artifacts/newprojectbss_jar/newprojectbss.jar";
     private static final String VERSAO_LOCAL = "1.0.0";
     private static final String VERSAO_REMOTA_URL =
@@ -14,34 +15,80 @@ public class Launcher {
     private static final String JAR_URL =
             "https://raw.githubusercontent.com/YgorBL00/test/main/out/artifacts/NewProjectbss_jar/newprojectbss.jar";
 
-    public static void main(String[] args) {
-        try {
-            JOptionPane.showMessageDialog(null, "Verificando atualizações...", "Launcher", JOptionPane.INFORMATION_MESSAGE);
+    private JLabel statusLabel;
+    private JProgressBar progressBar;
 
-            String versaoRemota = lerVersaoRemota();
-            if (!VERSAO_LOCAL.equals(versaoRemota)) {
-                JOptionPane.showMessageDialog(null, "Nova versão detectada: " + versaoRemota, "Atualização", JOptionPane.INFORMATION_MESSAGE);
-                baixarNovaVersao();
-                JOptionPane.showMessageDialog(null, "Atualização concluída!", "Launcher", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Nenhuma atualização encontrada. Iniciando app...", "Launcher", JOptionPane.INFORMATION_MESSAGE);
-            }
+    public Launcher() {
+        setTitle("Launcher BSS");
+        setSize(400, 150);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
-            iniciarApp();
+        statusLabel = new JLabel("Iniciando verificação...", SwingConstants.CENTER);
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Erro ao atualizar: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+        progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        progressBar.setStringPainted(true);
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.add(statusLabel, BorderLayout.NORTH);
+        panel.add(progressBar, BorderLayout.CENTER);
+
+        add(panel);
     }
 
-    private static String lerVersaoRemota() throws IOException {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Launcher launcher = new Launcher();
+            launcher.setVisible(true);
+            launcher.verificarAtualizacao();
+        });
+    }
+
+    private void verificarAtualizacao() {
+        new Thread(() -> {
+            try {
+                atualizarStatus("Verificando atualizações...");
+                String versaoRemota = lerVersaoRemota();
+
+                if (!VERSAO_LOCAL.equals(versaoRemota)) {
+                    atualizarStatus("Nova versão " + versaoRemota + " encontrada. Baixando...");
+                    progressBar.setIndeterminate(false);
+                    baixarNovaVersao();
+                    atualizarStatus("Atualização concluída!");
+                } else {
+                    atualizarStatus("Nenhuma atualização encontrada.");
+                }
+
+                Thread.sleep(1000);
+                atualizarStatus("Iniciando aplicação...");
+                iniciarApp();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                atualizarStatus("Erro: " + e.getMessage());
+                JOptionPane.showMessageDialog(this,
+                        "Erro ao atualizar: " + e.getMessage(),
+                        "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }).start();
+    }
+
+    private void atualizarStatus(String msg) {
+        SwingUtilities.invokeLater(() -> statusLabel.setText(msg));
+    }
+
+    private String lerVersaoRemota() throws IOException {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new URL(VERSAO_REMOTA_URL).openStream()))) {
             return in.readLine().trim();
         }
     }
 
-    private static void baixarNovaVersao() throws IOException {
+    private void baixarNovaVersao() throws IOException {
         File appFile = new File(APP_PATH);
         appFile.getParentFile().mkdirs();
 
@@ -50,7 +97,7 @@ public class Launcher {
         }
     }
 
-    private static void iniciarApp() throws IOException {
+    private void iniciarApp() throws IOException {
         ProcessBuilder pb = new ProcessBuilder("java", "-jar", APP_PATH);
         pb.inheritIO();
         pb.start();

@@ -4,6 +4,7 @@ module com.example.newprojectbss {
     requires kernel;
     requires layout;
     requires java.desktop;
+    requires java.sql;
 
     opens com.example.newprojectbss.model to javafx.base;  // <<< aqui
 

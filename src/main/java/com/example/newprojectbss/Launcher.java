@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 
 public class Launcher extends JFrame {
     private static final String APP_PATH = "out/artifacts/newprojectbss_jar/newprojectbss.jar";
-    private static final String VERSAO_LOCAL = "1.0.0";
+    private static final String VERSAO_LOCAL = "1.0.1";
     private static final String VERSAO_REMOTA_URL =
             "https://raw.githubusercontent.com/YgorBL00/test/refs/heads/main/src/main/java/com/example/newprojectbss/versao.txt";
     private static final String JAR_URL =

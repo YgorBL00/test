@@ -1,11 +1,9 @@
 package com.example.newprojectbss.ui;
 
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -17,10 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 public class PainelBemVindo extends BorderPane {
 
@@ -99,13 +93,13 @@ public class PainelBemVindo extends BorderPane {
 
             fadeOutCentro.setOnFinished(ev -> {
                 // Troca o conteúdo do root pelo formulário
-                root.getChildren().setAll(new Formulario(stage, root));
+                root.getChildren().setAll(new Inicio(stage, root));
 
                 // Aplica fade-in no formulário
-                Node formulario = root.getChildren().get(0);
-                formulario.setOpacity(0);
+                Node CadastroCliente = root.getChildren().get(0);
+                CadastroCliente.setOpacity(0);
 
-                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), formulario);
+                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.3), CadastroCliente);
                 fadeIn.setFromValue(0);
                 fadeIn.setToValue(1);
                 fadeIn.play();

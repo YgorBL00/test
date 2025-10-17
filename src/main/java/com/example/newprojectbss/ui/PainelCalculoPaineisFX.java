@@ -3,8 +3,6 @@ package com.example.newprojectbss.ui;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -14,8 +12,8 @@ import com.example.newprojectbss.model.LogicaDoCalculodePaineis;
 
 public class PainelCalculoPaineisFX extends VBox {
 
-    private StackPane root;   // <-- declarar aqui
-    private Stage stage;      // <-- também guarde a stage
+    private final StackPane root;
+    private final Stage stage;
 
     private final TextField tfEspessura = novoCampo();
     private final TextField tfLargura = novoCampo();
@@ -31,7 +29,6 @@ public class PainelCalculoPaineisFX extends VBox {
 
     public final Button btnVoltar = new Button("Voltar");
 
-    // Alterar construtor para receber root e stage
     public PainelCalculoPaineisFX(Stage stage, StackPane root) {
         this.root = root;
         this.stage = stage;
@@ -48,6 +45,7 @@ public class PainelCalculoPaineisFX extends VBox {
         linha.getChildren().addAll(painelCampos, painelResultados);
         getChildren().add(linha);
 
+        // Botão Voltar
         HBox boxBotoes = new HBox();
         boxBotoes.setPadding(new Insets(20, 0, 0, 0));
         boxBotoes.setAlignment(Pos.CENTER_LEFT);
@@ -57,20 +55,20 @@ public class PainelCalculoPaineisFX extends VBox {
         boxBotoes.getChildren().add(btnVoltar);
         getChildren().add(boxBotoes);
 
-        // Ação do botão Voltar usando root e stage
+        // Ação do botão Voltar -> volta para o menu Inicio
         btnVoltar.setOnAction(e -> {
-            Formulario formulario = new Formulario(stage, root);
+            Inicio inicio = new Inicio(stage, root);
 
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), this);
             fadeOut.setFromValue(1);
             fadeOut.setToValue(0);
 
             fadeOut.setOnFinished(ev -> {
-                root.getChildren().setAll(formulario);
-                stage.setTitle("Configuração Inicial da Câmara");
-                formulario.setOpacity(0);
+                root.getChildren().setAll(inicio);
+                stage.setTitle("Menu Principal");
+                inicio.setOpacity(0);
 
-                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), formulario);
+                FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), inicio);
                 fadeIn.setFromValue(0);
                 fadeIn.setToValue(1);
                 fadeIn.play();
@@ -78,12 +76,17 @@ public class PainelCalculoPaineisFX extends VBox {
             fadeOut.play();
         });
 
-
+        // Fade-in ao abrir a tela
+        this.setOpacity(0);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), this);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
     }
 
-
-    // resto do código original...
-
+    // -------------------------
+    // Montagem do painel de campos
+    // -------------------------
     private VBox montarPainelCampos() {
         VBox campos = new VBox(11);
         campos.setPadding(new Insets(13));
@@ -118,17 +121,22 @@ public class PainelCalculoPaineisFX extends VBox {
         return painel;
     }
 
+    // -------------------------
+    // Montagem do painel de resultados
+    // -------------------------
     private VBox montarPainelResultados() {
         TableColumn<LogicaDoCalculodePaineis, String> colLocal   = new TableColumn<>("Local");
         TableColumn<LogicaDoCalculodePaineis, String> colQtd     = new TableColumn<>("Qtd. Painéis");
         TableColumn<LogicaDoCalculodePaineis, String> colAltura  = new TableColumn<>("Altura (m)");
         TableColumn<LogicaDoCalculodePaineis, String> colLargura = new TableColumn<>("Largura (m)");
         TableColumn<LogicaDoCalculodePaineis, String> colArea    = new TableColumn<>("Área (m²)");
+
         colLocal.setCellValueFactory(data -> data.getValue().localProperty());
         colQtd.setCellValueFactory(data -> data.getValue().qtdProperty());
         colAltura.setCellValueFactory(data -> data.getValue().alturaProperty());
         colLargura.setCellValueFactory(data -> data.getValue().larguraProperty());
         colArea.setCellValueFactory(data -> data.getValue().areaProperty());
+
         tabela.getColumns().setAll(colLocal, colQtd, colAltura, colLargura, colArea);
         tabela.setPrefHeight(170);
         tabela.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -159,6 +167,9 @@ public class PainelCalculoPaineisFX extends VBox {
         return tf;
     }
 
+    // -------------------------
+    // Lógica de cálculo
+    // -------------------------
     private void calcularPaineis() {
         try {
             double espessura = Double.parseDouble(tfEspessura.getText().replace(",", ".").trim());
